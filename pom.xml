@@ -21,10 +21,13 @@
         <mybatis.version>2.2.2</mybatis.version>
         <druid.version>1.2.11</druid.version>
         <jwt-auth0.version>4.0.0</jwt-auth0.version>
+        <springdoc.version>1.6.9</springdoc.version>
     </properties>
 
     <modules>
         <module>account</module>
+        <module>goods</module>
+        <module>order</module>
     </modules>
 
     <dependencyManagement>
@@ -51,6 +54,11 @@
                 <groupId>com.auth0</groupId>
                 <artifactId>java-jwt</artifactId>
                 <version>${jwt-auth0.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>${springdoc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

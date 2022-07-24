@@ -1,4 +1,4 @@
-package vip.testops.account.entities.resp;
+package vip.testops.goods.entities.resp;
 
 import lombok.Data;
 

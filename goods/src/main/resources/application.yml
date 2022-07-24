@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    consul:
+      config:
+        format: YAML
+      host: localhost
+      port: 8500
+  application:
+    name: goods
+  config:
+    import: optional:consul:localhost:8500
+  profiles:
+    active: dev
+
+
+server:
+  port: 10002

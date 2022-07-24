@@ -11,8 +11,8 @@ public interface UserMapper {
     @SelectKey(statement = "select last_insert_id()", keyProperty = "accountId", before = false, resultType = long.class)
     int addUser(UserDTO user);
 
-    @Select("select * from t_account where accountName=#{accountName}")
-    UserDTO getUserByName(String accountName);
+    @Select("select * from t_account where accountName=#{name} or email=#{name}")
+    UserDTO getUserByNameOrEmail(String name);
 
     @Update("update t_account set lastLoginTime=#{lastLoginTime} where accountId=#{accountId}")
     int updateLastLoginTime(Date lastLoginTime, long accountId);
