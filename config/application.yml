@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/springdemo?useUnicode=true&serverTimezone=Asia/Shanghai&useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true
+      username: root
+      password: Gungnir123!
+      initial-size: 5
+      max-active: 20
+      min-idle: 1
+      max-wait: 60000
+      max-open-prepared-statements: 20
+      validation-query: select 1
+      validation-query-timeout: 5000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idel: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      filters: stat
+
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        profile-enable: true
+
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: liudao
+        login-password: 123456
+
+  redis:
+    host: localhost
+    port: 6379
+    jedis:
+      pool:
+        min-idle: 2
+        max-idle: 10
+        max-active: 10
+
+  jackson:
+    default-property-inclusion: non_null

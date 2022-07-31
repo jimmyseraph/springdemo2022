@@ -1,0 +1,14 @@
+feign:
+  circuitbreaker:
+    enabled: true
+    alphanumeric-ids:
+      enabled: true
+resilience4j:
+  circuitbreaker:
+    instances:
+      goods:
+        minimumNumberOfCalls: 69
+  timelimiter:
+    instances:
+      goods:
+        timeoutDuration: 10s

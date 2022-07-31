@@ -48,7 +48,13 @@ public class OrderController {
         }
         long userId = userInfo.getUserId();
         // deep into service
-        orderService.doCreate(userId, req.getGoodsList(), response);
+        try{
+            orderService.doCreate(userId, req.getGoodsList(), response);
+        } catch (Exception e) {
+            log.error("internal error");
+            return response;
+        }
+
         return response;
     }
     // order list
@@ -77,7 +83,12 @@ public class OrderController {
             return response;
         }
         // 2. deep into service
-        orderService.doDetail(id, userInfo.getUserId(), userInfo.getUsername(), response);
+        try{
+            orderService.doDetail(id, userInfo.getUserId(), userInfo.getUsername(), response);
+        } catch (Exception e) {
+            log.error("internal error");
+            return response;
+        }
         return response;
     }
 

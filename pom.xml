@@ -28,6 +28,7 @@
         <module>account</module>
         <module>goods</module>
         <module>order</module>
+        <module>gateway</module>
     </modules>
 
     <dependencyManagement>

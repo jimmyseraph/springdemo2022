@@ -1,0 +1,40 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: account_register_route
+          uri: lb://account
+          predicates:
+            - Path=/api/user/register
+          filters:
+            - SetPath=/user/register
+
+        - id: account_login_route
+          uri: lb://account
+          predicates:
+            - Path=/api/user/login
+          filters:
+            - SetPath=/user/login
+
+        - id: account_logout_route
+          uri: lb://account
+          predicates:
+            - Path=/api/user/logout
+          filters:
+            - SetPath=/user/logout
+
+        - id: goods_route
+          uri: lb://goods
+          predicates:
+            - Path=/api/goods/**
+          filters:
+            - TokenAuthorize=true
+            - RewritePath=/api(?<segment>/?.*), $\{segment}
+
+        - id: order_route
+          uri: lb://order
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - TokenAuthorize=true
+            - RewritePath=/api(?<segment>/?.*), $\{segment}

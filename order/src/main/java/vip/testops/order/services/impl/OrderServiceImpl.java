@@ -2,6 +2,7 @@ package vip.testops.order.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vip.testops.order.clients.GoodsClient;
@@ -9,12 +10,14 @@ import vip.testops.order.entities.dto.GoodsDTO;
 import vip.testops.order.entities.dto.OrderDTO;
 import vip.testops.order.entities.dto.OrderDetailDTO;
 import vip.testops.order.entities.req.GoodsInfo;
+import vip.testops.order.entities.resp.GoodsOrder;
 import vip.testops.order.entities.resp.OrderDetailResp;
 import vip.testops.order.entities.resp.Response;
 import vip.testops.order.mappers.OrderDetailMapper;
 import vip.testops.order.mappers.OrderMapper;
 import vip.testops.order.services.OrderService;
 
+import java.util.ArrayList;
 import java.util.List;
 @Service
 @Slf4j
@@ -38,8 +41,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
-    public void doCreate(long userId, List<GoodsInfo> goodsInfoList, Response<?> response) {
+    @Transactional(rollbackFor = Exception.class)
+    public void doCreate(long userId, List<GoodsInfo> goodsInfoList, Response<?> response) throws Exception{
         // 1 create orderDTO, and insert into db
         OrderDTO orderDTO = new OrderDTO();
         orderDTO.setCustomId(userId);
@@ -51,7 +54,7 @@ public class OrderServiceImpl implements OrderService {
             if(goodsDetailResp.getCode() != 1000) {
                 response.setCode(goodsDetailResp.getCode());
                 response.setMessage(goodsDetailResp.getMessage());
-                return;
+                throw new RuntimeException("internal error.");
             }
             OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
             orderDetailDTO.setOrderId(orderDTO.getId());
@@ -66,11 +69,34 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void doList(long userId, Response<List<OrderDTO>> response) {
-
+        List<OrderDTO> orderDTOList = orderMapper.getOrderListByCustomId(userId);
+        response.successWithData(orderDTOList);
     }
 
     @Override
-    public void doDetail(long id, long userId, String username, Response<OrderDetailResp> response) {
+    public void doDetail(long id, long userId, String username, Response<OrderDetailResp> response) throws Exception{
+        List<GoodsOrder> list = new ArrayList<>();
+        List<OrderDetailDTO> orderDetailDTOList = orderDetailMapper.getDetailByOrderId(id);
+        for(OrderDetailDTO orderDetailDTO : orderDetailDTOList) {
+            Response<GoodsDTO> goodsDetailResp = goodsClient.getGoods(orderDetailDTO.getGoodsId());
+            if(goodsDetailResp.getCode() != 1000) {
+                response.setCode(goodsDetailResp.getCode());
+                response.setMessage(goodsDetailResp.getMessage());
+                throw new RuntimeException("internal error.");
+            }
+            GoodsOrder goodsOrder = new GoodsOrder();
+            goodsOrder.setGoodsId(orderDetailDTO.getGoodsId());
+            goodsOrder.setGoodsName(goodsDetailResp.getData().getName());
+            goodsOrder.setPrice(orderDetailDTO.getPrice());
+            goodsOrder.setAmount(orderDetailDTO.getAmount());
+            list.add(goodsOrder);
+        }
 
+        OrderDetailResp orderDetailResp = new OrderDetailResp();
+        orderDetailResp.setCustomId(userId);
+        orderDetailResp.setCustom(username);
+        orderDetailResp.setId(id);
+        orderDetailResp.setList(list);
+        response.successWithData(orderDetailResp);
     }
 }
